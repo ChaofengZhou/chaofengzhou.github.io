@@ -1,7 +1,10 @@
 h2 {
 	color: blue;
 }
-
 p {
 	color: brown;
+}
+img {
+	width: 300px;
+	height: auto;
 }
