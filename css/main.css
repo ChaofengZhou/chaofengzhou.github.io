@@ -5,14 +5,15 @@ body {
     font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
     font-weight: 300;
     margin: 0;
-    background-color: #fff;
+    /*background-color: #fff;*/
+    background-color: #d7d7d7;
 }
 
 .table {
     width: 85%;
     margin: auto;
     padding-bottom: 30px;
-    background-color: #f1f1f1;
+    background-color: #fafafa;
     border-radius: 5px;
 }
 
