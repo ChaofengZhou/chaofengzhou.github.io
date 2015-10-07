@@ -1,17 +1,88 @@
-h2 {
-	color: blue;
+h1 {
+	font-weight: bold;
+	text-align: center;
+	padding-top: 5px;
+	padding-bottom: 10px;
+	color: #acd1b2;
 }
+
 p {
 	color: brown;
 }
+
 img {
 	width: 300px;
 	height: auto;
 }
 
-a {
-	color: red;
+.links {
+	color: white;
+	text-align: right;
 	text-decoration: none;
+	font-size: 20px;
+}
+
+div {
+	border-radius: 5px;
+}
+
+
+#navbar {
+	/*Add your CSS here!*/
+	position: fixed;
+	left:50%;
+	margin-left:-254px;
+}
+
+#header {
+	position: relative;
+	background-color: #3c4543;
+	border-top-left-radius: 15px;
+	border-top-right-radius: 15px;
+}
+
+#header2 {
+	height: 50px;
+	background-color: #F38630;
+	margin-bottom: 10px;
+}
+
+.left {
+	height: 300px;
+	width: 150px;
+	background-color: #A7DBD8;
+	float: left;
+	margin-bottom: 10px;
+}
+
+.right {
+	position: relative;
+	float: right;
+	margin-top: 50px;
+	width: 60%;
+	height: 400px;
+	background-color: #F4EBC3;
+	margin-bottom: 10px;
+}
+
+.right p {
+	margin-left: 5px;
+	margin-right: 5px;
+	margin-top: -10px;
+	font-family: Garamond, serif;
+	color: #000000;
+}
+
+#footer {
+	height: 50px;
+	background-color: #69D2E7;
+	/*Add your CSS here!*/
+	clear: both;
+
+.content {
+	padding: 25px;
+	border: 25px;
+	margin: 25px;
 }
 
 a:hover {

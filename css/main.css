@@ -1,0 +1,310 @@
+html {
+
+        -ms-text-size-adjust: 100%;
+        -webkit-text-size-adjust: 100%
+    }
+    
+    body {
+        margin: 0
+    }
+    
+    article,
+    aside,
+    details,
+    figcaption,
+    figure,
+    footer,
+    header,
+    hgroup,
+    main,
+    nav,
+    section,
+    summary {
+        display: block
+    }
+    
+    audio,
+    canvas,
+    progress,
+    video {
+        display: inline-block;
+        vertical-align: baseline
+    }
+    
+    audio:not([controls]) {
+        display: none;
+        height: 0
+    }
+    
+    [hidden],
+    template {
+        display: none
+    }
+    
+    a {
+        background: transparent
+    }
+    
+    a:active,
+    a:hover {
+        outline: 0
+    }
+    
+    abbr[title] {
+        border-bottom: 1px dotted
+    }
+    
+    b,
+    strong {
+        font-weight: bold
+    }
+    
+    dfn {
+        font-style: italic
+    }
+    
+    h1 {
+        font-size: 2em;
+        margin: .67em 0
+    }
+    
+    mark {
+        background: #ff0;
+        color: #000
+    }
+    
+    small {
+        font-size: 80%
+    }
+    
+    sub,
+    sup {
+        font-size: 75%;
+        line-height: 0;
+        position: relative;
+        vertical-align: baseline
+    }
+    
+    sup {
+        top: -0.5em
+    }
+    
+    sub {
+        bottom: -0.25em
+    }
+    
+    img {
+        border: 0
+    }
+    
+    svg:not(:root) {
+        overflow: hidden
+    }
+    
+    figure {
+        margin: 1em 40px
+    }
+    
+    hr {
+        -moz-box-sizing: content-box;
+        box-sizing: content-box;
+        height: 0
+    }
+    
+    pre {
+        overflow: auto
+    }
+    
+    code,
+    kbd,
+    pre,
+    samp {
+        font-family: monospace, monospace;
+        font-size: 1em
+    }
+    
+    button,
+    input,
+    optgroup,
+    select,
+    textarea {
+        color: inherit;
+        font: inherit;
+        margin: 0
+    }
+    
+    button {
+        overflow: visible
+    }
+    
+    button,
+    select {
+        text-transform: none
+    }
+    
+    button,
+    html input[type="button"],
+    input[type="reset"],
+    input[type="submit"] {
+        -webkit-appearance: button;
+        cursor: pointer
+    }
+    
+    button[disabled],
+    html input[disabled] {
+        cursor: default
+    }
+    
+    button::-moz-focus-inner,
+    input::-moz-focus-inner {
+        border: 0;
+        padding: 0
+    }
+    
+    input {
+        line-height: normal
+    }
+    
+    input[type="checkbox"],
+    input[type="radio"] {
+        box-sizing: border-box;
+        padding: 0
+    }
+    
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        height: auto
+    }
+    
+    input[type="search"] {
+        -webkit-appearance: textfield;
+        -moz-box-sizing: content-box;
+        -webkit-box-sizing: content-box;
+        box-sizing: content-box
+    }
+    
+    input[type="search"]::-webkit-search-cancel-button,
+    input[type="search"]::-webkit-search-decoration {
+        -webkit-appearance: none
+    }
+    
+    fieldset {
+        border: 1px solid #c0c0c0;
+        margin: 0 2px;
+        padding: .35em .625em .75em
+    }
+    
+    legend {
+        border: 0;
+        padding: 0
+    }
+    
+    textarea {
+        overflow: auto
+    }
+    
+    optgroup {
+        font-weight: bold
+    }
+    
+    table {
+        border-collapse: collapse;
+        border-spacing: 0
+    }
+    
+    td,
+    th {
+        padding: 0
+    }
+    </style>
+    <style media="" data-href="/css/site.css">
+    html,
+    body {
+        height: 100%;
+        width: 100%;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+        font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+        font-weight: 300;
+    }
+    
+    body {
+        background-color: #000;
+        color: #ecf0f1;
+    }
+    
+    #bg {
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        min-width: 100%;
+        min-height: 100%;
+        width: auto;
+        height: auto;
+        z-index: -100;
+    }
+    /* bs grid shit */
+    
+    .table {
+        display: table;
+        height: 100%;
+        width: 100%;
+    }
+    
+    .cell {
+        display: table-cell;
+        vertical-align: middle;
+        padding-top: 30px;
+        padding-bottom: 30px;
+    }
+    /* photo stuff */
+    /* you need to replace /avatar/* with the md5 of your gravatar email */
+    
+    .my-photo {
+        margin-top: 25px;
+        width: 250px;
+        height: 250px;
+        border-radius: 100%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        background: url('img/chaofeng1.png') center no-repeat;
+        background-size: 250px;
+    }
+    
+    @media only screen and (-moz-min-device-pixel-ratio: 1.5),
+    only screen and (-o-min-device-pixel-ratio: 3/2),
+    only screen and (-webkit-min-device-pixel-ratio: 1.5),
+    only screen and (min-device-pixel-ratio: 1.5) {
+        .my-photo {
+            background: url('https://secure.gravatar.com/avatar/e421e88e9248d199ac126fb56941b0e3?size=500px') center no-repeat;
+            background-size: 250px;
+        }
+    }
+    /* name text */
+    
+    .name {
+        font-size: 44px;
+        text-align: center;
+    }
+    /* links */
+    
+    .links {
+        margin-top: 25px;
+        text-align: center;
+    }
+    
+    .links .links-text {
+        font-size: 22px;
+        padding-bottom: 10px;
+    }
+    
+    .links a {
+        padding-left: 15px;
+        padding-right: 15px;
+        font-size: 20px;
+        text-decoration: none;
+        color: #2ecc71;
+    }
+    </style>
