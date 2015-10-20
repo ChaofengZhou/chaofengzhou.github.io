@@ -1,0 +1,14 @@
+html,
+body {
+    height: 100%;
+    width: 100%;
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-weight: 300;
+    margin: 0;
+    /*background-color: #fff;*/
+    background-color: #d7d7d7;
+}
+
+.content {
+	left: 50%;
+}

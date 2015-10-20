@@ -11,7 +11,8 @@ body {
 
 .table {
     width: 85%;
-    margin: auto;
+    /*margin: auto;*/
+    margin: 1.5% auto 1.5% auto;
     padding-bottom: 30px;
     background-color: #f6f6f6;
     border-radius: 5px;
