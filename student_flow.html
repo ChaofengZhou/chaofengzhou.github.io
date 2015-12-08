@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+svg {
+  float: left;
+}
+
+.sideview {}
+
+#sideview0 {
+  /*margin: 340px 0 80px 0;*/
+  position: absolute;
+  left: 1130px;
+  top: 350px;
+}
+
+#sideview1 {
+  /*margin: 340px 0 80px 0;*/
+  position: absolute;
+  left: 1130px;
+  top: 650px;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: black;
+}
+
+.axis text {
+  font-family: sans-serif;
+  font-size: 12px;
+}
+
+.MyText {
+  fill: #000;
+  text-anchor: middle;
+}
+
+.chartTitle {
+  position: absolute;
+  font-family: sans-serif;
+  font-size: 14px;
+}
+</style>
+
+<body>
+  <p style="position: absolute; left: 570px; top:10px; font-size: 20px;">DESTINATION</p>
+  <p style="position: absolute; left: 5px; top:600px; font-size: 20px; transform: rotate(-90deg);">SOURCE</p>
+  <form action="" style="position: absolute; left: 1240px; top:270px">
+    Y Axis:
+    <input type="radio" name="yAxisType" value="fixed" checked="checked" style="margin-left: 10px"> Fixed
+    <input type="radio" name="yAxisType" value="adjusted" style="margin-left: 10px"> Adjusted
+  </form>
+  <p class="chartTitle" style="left: 1220px; top:310px;">Fig. 1: Major Changing Rate by Gender</p>
+  <p class="chartTitle" style="left: 1190px; top:610px;">Fig. 2: Major Changing Rate by Academic Standing</p>
+  <!--   <form action="" style="position: absolute; left: 1160px; top:230px">
+    Phase:
+    <input type="radio" name="phase" value="1" checked="checked" style="margin-left: 10px"> First
+    <input type="radio" name="phase" value="2" style="margin-left: 10px"> Second
+  </form> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+  <script>
+  var margin = {
+      top: 250,
+      right: 10,
+      bottom: 10,
+      left: 250
+    },
+    width = 850,
+    height = 850,
+    rw = 40,
+    rh = 40;
+
+  var color = d3.scale.category20();
+
+  var colorMap = d3.scale.linear()
+    .domain([0, 0.15, 0.5])
+    .range(["white", d3.hsl("lightgreen"), d3.hsl("green")]);
+
+  var colorMap1 = d3.scale.linear()
+    .domain([0, 0.91])
+    .range(["white", d3.hsl("red")]);
+
+  var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    // .style("margin-left", margin.left + "px")
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  var sideWidth = 450,
+    sideHeight = 200,
+    padding = {
+      left: 54,
+      right: 30,
+      top: 20,
+      bottom: 20
+    };
+
+  d3.select("body").append("svg")
+    .attr("class", "sideview")
+    .attr("id", "sideview0")
+    .attr("width", sideWidth)
+    .attr("height", sideHeight)
+    .append("g");
+
+  d3.select("body").append("svg")
+    .attr("class", "sideview")
+    .attr("id", "sideview1")
+    .attr("width", sideWidth)
+    .attr("height", sideHeight)
+    .append("g");
+
+  d3.csv("flow.csv", function(error1, data) {
+    if (error1) throw error;
+    var majors = Object.keys(data[0]);
+    matrix = [];
+    data.forEach(function(d) {
+      var values = [];
+      for (var k in d) {
+        var str = d[k].replace(/'/g, '"');
+        values.push(JSON.parse(str));
+      }
+      matrix.push(values);
+    });
+
+    var grp = svg.selectAll('g')
+      .data(matrix)
+      .enter()
+      .append('g')
+      .attr('transform', function(d, i) {
+        return 'translate(0, ' + 45 * i + ')';
+      });
+
+    var cell = grp.selectAll('g')
+      .data(function(d) {
+        return d;
+      })
+      .enter()
+      .append('g')
+      .on("mouseover", rectMouseover);
+
+    function rectMouseover(data) {
+      d3.selectAll(".selected")
+        .attr("class", "unselected")
+        .style("fill", function(d, i) {
+          if (i === 0) {
+            if (d._2Total < 0.6)
+              return colorMap(d._1Total);
+            else
+              return colorMap1(d._1Total);
+          } else {
+            if (d._2Total < 0.6)
+              return colorMap(d._2Total);
+            else
+              return colorMap1(d._2Total);
+          }
+        });
+      d3.select(this).selectAll("rect")
+        .attr("class", "selected")
+        .style("fill", function(data, i) {
+          if (i === 0)
+            return "yellow";
+          else
+            return "blue";
+        });
+
+      var genderDataset = [data._1Total, data._2Total, data._1Male, data._2Male, data._1Female, data._2Female];
+      var gradeDataset = [data._1Total, data._2Total, data._1Good, data._2Good, data._1Moderate, data._2Moderate, data._1Poor, data._2Poor];
+
+      yScale = d3.scale.linear()
+        .domain([0, 1.0])
+        .range([sideHeight - padding.top - padding.bottom, 0]);
+      yAxis = d3.svg.axis()
+        .scale(yScale)
+        .orient("left")
+        .tickFormat(function(d, i) {
+          return d3.format('.2%')(d);
+        })
+        .ticks(6);
+      yRadio = d3.select('input[name="yAxisType"]:checked').node().value;
+      if (genderDataset[0] > 0.5 || genderDataset[1] > 0.5) {
+        if (yRadio === "fixed")
+          yScale.domain([0, 1.0]);
+        else
+          yScale.domain([0, d3.max(genderDataset)]);
+        rectColor = "#900";
+      } else {
+        if (yRadio === "fixed")
+          yScale.domain([0, 0.45]);
+        else
+          yScale.domain([0, d3.max(genderDataset)]);
+        rectColor = "#090";
+      }
+
+      if (d3.select(".MyRect").empty()) {
+        generateSideView(genderDataset, 0, ["Average", "Male", "Female"]);
+        generateSideView(gradeDataset, 1, ["Average", "Good", "Moderate", "Poor"]);
+      } else {
+        updateSideView(genderDataset, 0, ["Average", "Male", "Female"]);
+        updateSideView(gradeDataset, 1, ["Average", "Good", "Moderate", "Poor"]);
+      }
+    }
+
+    var rects1 = cell.append('rect')
+      .attr('x', function(d, i) {
+        return 45 * i;
+      })
+      .attr('width', rw)
+      .attr('height', rh / 2)
+      .style("fill", function(d, i) {
+        if (d._2Total < 0.6)
+          return colorMap(d._1Total);
+        else
+          return colorMap1(d._1Total);
+      });
+
+    var rects2 = cell.append('rect')
+      .attr('x', function(d, i) {
+        return 45 * i;
+      })
+      .attr('transform', function(d, i) {
+        return 'translate(0, ' + 20 + ')';
+      })
+      .attr('width', rw)
+      .attr('height', rh / 2)
+      .style("fill", function(d, i) {
+        if (d._2Total < 0.6)
+          return colorMap(d._2Total);
+        else
+          return colorMap1(d._2Total);
+      });
+
+    cell.append("text")
+      .attr("transform", function(d, i) {
+        return "translate(" + (45 * i + 21) + "," + 14 + ")";
+      })
+      .attr("text-anchor", "middle")
+      .attr("font-size", 10)
+      .style('fill', '#bbb')
+      .text(function(d) {
+        return d3.format(".2%")(d._1Total);
+      });
+
+    cell.append("text")
+      .attr("transform", function(d, i) {
+        return "translate(" + (45 * i + 21) + "," + 34 + ")";
+      })
+      .attr("text-anchor", "middle")
+      .attr("font-size", 10)
+      .style('fill', '#bbb')
+      .text(function(d) {
+        return d3.format(".2%")(d._2Total);
+      });
+
+    var column = svg.selectAll(".column")
+      .data(majors)
+      .enter()
+      .append("g")
+      .attr("class", "column")
+      .attr("font-size", 14)
+      .attr("transform", function(d, i) {
+        return "translate(" + (45 * i + 21) + "," + -10 + ")rotate(-90)";
+      });
+
+    column.append("text")
+      .attr("text-anchor", "start")
+      .text(function(d, i) {
+        return d;
+      });
+
+    var row = svg.selectAll(".row")
+      .data(majors)
+      .enter()
+      .append("g")
+      .attr("class", "row")
+      .attr("font-size", 14)
+      .attr("transform", function(d, i) {
+        return "translate(" + -7 + "," + (45 * i + 22) + ")";
+      });
+
+    row.append("text")
+      .attr("text-anchor", "end")
+      .text(function(d, i) {
+        return d;
+      });
+  });
+
+  function updateSideView(dataset, index, xAxisLabel) {
+    var sideView = d3.select("#sideview" + index);
+    var rects = sideView.selectAll(".MyRect")
+      .data(dataset)
+      .transition()
+      .duration(350)
+      .attr("y", function(d) {
+        return yScale(d);
+      })
+      .attr("height", function(d) {
+        return sideHeight - padding.top - padding.bottom - yScale(d);
+      });
+
+    var texts = sideView.selectAll(".MyText")
+      .data(dataset)
+      .transition()
+      .duration(350)
+      .attr("y", function(d) {
+        return yScale(d);
+      })
+      .text(function(d) {
+        return d3.format('.2%')(d);
+      });
+
+    yAxis.scale(yScale);
+    sideView.select("#yaxis")
+      .call(yAxis);
+  }
+
+  var yScale;
+  var yAxis;
+  var rectColor;
+  var yRadio;
+
+  function generateSideView(dataset, index, xAxisLabel) {
+    var sideView = d3.select("#sideview" + index);
+    var rectPadding = 10;
+    var xScale = d3.scale.ordinal()
+      .domain(d3.range(dataset.length))
+      .rangeRoundBands([0, sideWidth - padding.left - padding.right]);
+    var xAxisScale = d3.scale.ordinal()
+      .domain(d3.range(dataset.length / 2))
+      .rangeRoundBands([0, sideWidth - padding.left - padding.right]);
+
+    var xAxis = d3.svg.axis()
+      .scale(xAxisScale)
+      .tickFormat(function(d, i) {
+        return xAxisLabel[i];
+      })
+      .orient("bottom");
+
+    var rects = sideView.selectAll(".MyRect")
+      .data(dataset)
+      .enter()
+      .append("rect")
+      .attr("class", "MyRect")
+      .attr("transform", "translate(" + padding.left + "," + padding.top + ")")
+      .attr("fill", function(d, i) {
+        if (i % 2 === 0)
+          return "yellow";
+        else
+          return "blue";
+      })
+      .transition()
+      .attr("x", function(d, i) {
+        if (i % 2 === 0)
+          return xScale(i) + rectPadding / 2;
+        else
+          return xScale(i) - rectPadding / 2;
+      })
+      .attr("y", function(d) {
+        return yScale(d);
+      })
+      .attr("width", xScale.rangeBand() - rectPadding)
+      .attr("height", function(d) {
+        return sideHeight - padding.top - padding.bottom - yScale(d);
+      });
+
+    var texts = sideView.selectAll(".MyText")
+      .data(dataset)
+      .enter()
+      .append("text")
+      .attr("class", "MyText")
+      .attr("transform", "translate(" + padding.left + "," + padding.top + ")")
+      .attr("x", function(d, i) {
+        if (i % 2 === 0)
+          return xScale(i) + rectPadding / 2;
+        else
+          return xScale(i) - rectPadding / 2;
+      })
+      .attr("y", function(d) {
+        return yScale(d);
+      })
+      .attr("dx", function() {
+        return (xScale.rangeBand() - rectPadding) / 2;
+      })
+      .attr("dy", function(d) {
+        return -5;
+      })
+      .attr("font-size", 12)
+      .text(function(d) {
+        return d3.format('.2%')(d);
+      });
+
+    sideView.append("g")
+      .attr("class", "axis")
+      .attr("id", "xaxis")
+      .attr("transform", "translate(" + padding.left + "," + (sideHeight - padding.bottom) + ")")
+      .call(xAxis);
+
+    sideView.append("g")
+      .attr("class", "axis")
+      .attr("id", "yaxis")
+      .attr("transform", "translate(" + padding.left + "," + padding.top + ")")
+      .call(yAxis);
+  }
+  </script>
+</body>
