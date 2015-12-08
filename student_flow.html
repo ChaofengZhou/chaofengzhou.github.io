@@ -11,14 +11,14 @@ svg {
   /*margin: 340px 0 80px 0;*/
   position: absolute;
   left: 1130px;
-  top: 350px;
+  top: 420px;
 }
 
 #sideview1 {
   /*margin: 340px 0 80px 0;*/
   position: absolute;
   left: 1130px;
-  top: 650px;
+  top: 720px;
 }
 
 .axis path,
@@ -42,18 +42,29 @@ svg {
   font-family: sans-serif;
   font-size: 14px;
 }
+
+.descrip {
+  position: absolute;
+  left: 1135px;
+  top: 120px;
+  width: 440px;
+}
 </style>
 
 <body>
-  <p style="position: absolute; left: 570px; top:10px; font-size: 20px;">DESTINATION</p>
-  <p style="position: absolute; left: 5px; top:600px; font-size: 20px; transform: rotate(-90deg);">SOURCE</p>
-  <form action="" style="position: absolute; left: 1240px; top:270px">
+  <h1 style="position: absolute; left: 600px; top: 10px">Aleration of Student Majors</h1>
+  <div class="descrip">
+    <p><b>Description:</b> This project is to visualize how students switch majors during their first year and second year in college. Each square in this graph stands for the alteration ratio of majors from source majors to destination majors with the repects to the number of students in source majors. The upper division of squares refers to the changes occurring in the first year, while the lower one refers to that in the seond year. The histograms which are shown when you hover your mouse on squares illustrate the detailed rates for student changing majors by genders and academic standing of students.</p>
+  </div>
+  <p style="position: absolute; left: 570px; top:70px; font-size: 20px;">DESTINATION</p>
+  <p style="position: absolute; left: 5px; top:670px; font-size: 20px; transform: rotate(-90deg);">SOURCE</p>
+  <form action="" style="position: absolute; left: 1240px; top:340px">
     Y Axis:
     <input type="radio" name="yAxisType" value="fixed" checked="checked" style="margin-left: 10px"> Fixed
     <input type="radio" name="yAxisType" value="adjusted" style="margin-left: 10px"> Adjusted
   </form>
-  <p class="chartTitle" style="left: 1220px; top:310px;">Fig. 1: Major Changing Rate by Gender</p>
-  <p class="chartTitle" style="left: 1190px; top:610px;">Fig. 2: Major Changing Rate by Academic Standing</p>
+  <p class="chartTitle" style="left: 1220px; top:380px;">Fig. 1: Major Changing Rate by Gender</p>
+  <p class="chartTitle" style="left: 1190px; top:690px;">Fig. 2: Major Changing Rate by Academic Standing</p>
   <!--   <form action="" style="position: absolute; left: 1160px; top:230px">
     Phase:
     <input type="radio" name="phase" value="1" checked="checked" style="margin-left: 10px"> First
@@ -62,7 +73,7 @@ svg {
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
   <script>
   var margin = {
-      top: 250,
+      top: 310,
       right: 10,
       bottom: 10,
       left: 250
