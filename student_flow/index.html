@@ -59,9 +59,11 @@
   fill-opacity: .9;
 }
 
-.column, .row {
+.column,
+.row {
   cursor: default;
 }
+
 .node text {
   pointer-events: none;
   font-size: 12px;
@@ -81,11 +83,11 @@ input {
 <body>
   <h1 style="position: absolute; left: 740px; top: 10px">Aleration of Student Majors</h1>
   <div class="descrip">
-    <p><b>Description:</b> This project is to visualize how students switch majors during their first year and second year in college. Each square in this graph stands for the alteration ratio of majors from source majors to destination majors with the respects to the number of students in source majors. The upper division of squares refers to the changes occurring in the first year, while the lower one refers to that in the seond year. The histograms which are shown when you hover your mouse on squares illustrate the detailed rates for student changing majors by genders and academic standing of students.</p>
+    <p><b>Description:</b> This project is to visualize how students switch majors during their first year and second year in college. Each square in this graph stands for the alteration ratio of majors from source majors to destination majors with the respects to the number of students in source majors. The upper division of squares refers to the changes occurring in the first year, while the lower one refers to that in the seond year. You can choose either Sankey or Histogram as the side view. The Sankey graph shows the flows. The histograms which are shown when you hover your mouse on squares illustrate the detailed rates for student changing majors by genders and academic standing of students.</p>
   </div>
   <p style="position: absolute; left: 570px; top:60px; font-size: 20px;">DESTINATION</p>
   <p style="position: absolute; left: -10px; top:670px; font-size: 20px; transform: rotate(-90deg);">SOURCE</p>
-  <form action="" style="position: absolute; left: 1225px; top:260px">
+  <form action="" style="position: absolute; left: 1225px; top:245px">
     Side View:
     <input type="radio" name="viewOption" checked="checked" onclick="showSankey()"> Sankey
     <input type="radio" name="viewOption" onclick="showHisto()"> Histograms
@@ -117,12 +119,12 @@ input {
   var color = d3.scale.category20();
 
   var colorMap = d3.scale.linear()
-    .domain([0, 0.15, 0.5])
-    .range(["white", d3.hsl("lightgreen"), d3.hsl("green")]);
+    .domain([0, 0.5])
+    .range(["white", d3.hsl(235, 1, 0.5)]);
 
   var colorMap1 = d3.scale.linear()
     .domain([0, 0.91])
-    .range(["white", d3.hsl("red")]);
+    .range(["white", d3.hsl(35, 1, 0.6)]);
 
   var svg = d3.select("body").append("svg")
     .attr("class", "squareSvg")
@@ -155,9 +157,10 @@ input {
     .attr("height", sideHeight)
     .append("g");
 
+  var majors;
   d3.csv("flow.csv", function(error1, data) {
     if (error1) throw error;
-    var majors = Object.keys(data[0]);
+    majors = Object.keys(data[0]);
     matrix = [];
     data.forEach(function(d) {
       var values = [];
@@ -315,7 +318,7 @@ input {
       .attr("transform", function(d, i) {
         return "translate(" + -2 + "," + (-21) + ")";
       })
-      .attr('width', 191)
+      .attr('width', 196)
       .attr('height', rh)
       .style("fill", "white")
       .style("stroke", "#ddd")
@@ -325,7 +328,12 @@ input {
           return;
         d3.select("#hovered")
           .attr("id", "unhovered")
-          .style("fill", "white");
+          .style("fill", function(d) {
+            if (d3.select(this).attr("class") == "clicked")
+              return d3.select(this).style("fill");
+            else
+              return "white";
+          });
         d3.select(this)
           .attr("id", "hovered")
           .style("fill", function(d) {
@@ -334,15 +342,15 @@ input {
           });
         d = d + "2";
         var name = nameHash(d);
-        sankeyGraph.selectAll(".link")
+        sankeyGraph.selectAll(".unclickedLink")
           .style("stroke-opacity", 0);
         sankeyGraph.selectAll(".target_" + name.substring(0, name.length - 1) + "1")
-          .style("stroke-opacity", 0.4)
+          .style("stroke-opacity", 0.8)
           .style("stroke", function(d) {
             return d3.rgb(color(d.target.name.substring(0, d.target.name.length - 1)));
           });
         sankeyGraph.selectAll(".target_" + name.substring(0, name.length - 1) + "2")
-          .style("stroke-opacity", 0.4)
+          .style("stroke-opacity", 0.8)
           .style("stroke", function(d) {
             return d3.rgb(color(d.target.name.substring(0, d.target.name.length - 1)));
           });
@@ -360,7 +368,7 @@ input {
             .attr("class", "link target_" + name.substring(0, name.length - 1) + "1 unclickedLink")
             .style("stroke-opacity", 0);
           sankeyGraph.selectAll(".target_" + name.substring(0, name.length - 1) + "2")
-            .attr("class", "link target_" + name.substring(0, name.length - 1) + "1 unclickedLink")
+            .attr("class", "link target_" + name.substring(0, name.length - 1) + "2 unclickedLink")
             .style("stroke-opacity", 0);
         } else {
           self.attr("class", "clicked")
@@ -370,13 +378,13 @@ input {
             });
           sankeyGraph.selectAll(".target_" + name.substring(0, name.length - 1) + "1")
             .attr("class", "link target_" + name.substring(0, name.length - 1) + "1 clickedLink")
-            .style("stroke-opacity", 0.4)
+            .style("stroke-opacity", 0.8)
             .style("stroke", function(d) {
               return d3.rgb(color(d.target.name.substring(0, d.target.name.length - 1)));
             });
           sankeyGraph.selectAll(".target_" + name.substring(0, name.length - 1) + "2")
-            .attr("class", "link target_" + name.substring(0, name.length - 1) + "1 clickedLink")
-            .style("stroke-opacity", 0.4)
+            .attr("class", "link target_" + name.substring(0, name.length - 1) + "2 clickedLink")
+            .style("stroke-opacity", 0.8)
             .style("stroke", function(d) {
               return d3.rgb(color(d.target.name.substring(0, d.target.name.length - 1)));
             });
@@ -385,7 +393,7 @@ input {
 
     column.append("text")
       .attr("transform", function(d, i) {
-        return "translate(" + 0 + "," + 2 + ")";
+        return "translate(" + 3 + "," + 2 + ")";
       })
       .attr("text-anchor", "start")
       .text(function(d, i) {
@@ -416,7 +424,12 @@ input {
           return;
         d3.select("#hovered")
           .attr("id", "unhovered")
-          .style("fill", "white");
+          .style("fill", function(d) {
+            if (d3.select(this).attr("class") == "clicked")
+              return d3.select(this).style("fill");
+            else
+              return "white";
+          });
         d3.select(this)
           .attr("id", "hovered")
           .style("fill", function(d) {
@@ -425,19 +438,53 @@ input {
           });
         d = d + "0";
         var name = nameHash(d);
-        sankeyGraph.selectAll(".link")
+        sankeyGraph.selectAll(".unclickedLink")
           .style("stroke-opacity", 0);
         sankeyGraph.selectAll(".source_" + name.substring(0, name.length - 1) + "0")
-          .style("stroke-opacity", 0.4)
+          .style("stroke-opacity", 0.8)
           .style("stroke", function(d) {
-            console.log(d);
             return d3.rgb(color(d.target.name.substring(0, d.target.name.length - 1)));
           });
         sankeyGraph.selectAll(".source_" + name.substring(0, name.length - 1) + "1")
-          .style("stroke-opacity", 0.4)
+          .style("stroke-opacity", 0.8)
           .style("stroke", function(d) {
             return d3.rgb(color(d.target.name.substring(0, d.target.name.length - 1)));
           });
+      })
+      .on("click", function(d) {
+        if (document.getElementsByName("viewOption")[1].checked)
+          return;
+        var self = d3.select(this);
+        d = d + "0";
+        var name = nameHash(d);
+        if (self.attr('class') == "clicked") {
+          self.attr("class", "unclicked")
+            .style("fill", "white");
+          sankeyGraph.selectAll(".source_" + name.substring(0, name.length - 1) + "0")
+            .attr("class", "link source_" + name.substring(0, name.length - 1) + "0 unclickedLink")
+            .style("stroke-opacity", 0);
+          sankeyGraph.selectAll(".source_" + name.substring(0, name.length - 1) + "1")
+            .attr("class", "link source_" + name.substring(0, name.length - 1) + "1 unclickedLink")
+            .style("stroke-opacity", 0);
+        } else {
+          self.attr("class", "clicked")
+            .style("fill", function(d) {
+              d = d + "0";
+              return d3.rgb(color(d.substring(0, d.length - 1)));
+            });
+          sankeyGraph.selectAll(".source_" + name.substring(0, name.length - 1) + "0")
+            .attr("class", "link source_" + name.substring(0, name.length - 1) + "0 clickedLink")
+            .style("stroke-opacity", 0.8)
+            .style("stroke", function(d) {
+              return d3.rgb(color(d.target.name.substring(0, d.target.name.length - 1)));
+            });
+          sankeyGraph.selectAll(".source_" + name.substring(0, name.length - 1) + "1")
+            .attr("class", "link source_" + name.substring(0, name.length - 1) + "1 clickedLink")
+            .style("stroke-opacity", 0.8)
+            .style("stroke", function(d) {
+              return d3.rgb(color(d.target.name.substring(0, d.target.name.length - 1)));
+            });
+        }
       });
 
     row.append("text")
@@ -637,13 +684,20 @@ input {
       "links": []
     };
 
+    majors.forEach(function(major) {
+      graph.nodes.push({
+        "name": major + "2"
+      });
+      graph.nodes.push({
+        "name": major + "0"
+      });
+      graph.nodes.push({
+        "name": major + "1"
+      });
+
+    });
+
     data.forEach(function(d) {
-      graph.nodes.push({
-        "name": d.source
-      });
-      graph.nodes.push({
-        "name": d.target
-      });
       graph.links.push({
         "source": d.source,
         "target": d.target,
@@ -686,7 +740,7 @@ input {
       .attr("class", "link")
       .attr("d", path)
       .attr("class", function(d) {
-        return "link source_" + nameHash(d.source.name) + " target_" + nameHash(d.target.name);
+        return "link source_" + nameHash(d.source.name) + " target_" + nameHash(d.target.name) + " unclickedLink";
       })
       .style("stroke-width", function(d) {
         return Math.max(1, d.dy);
@@ -717,50 +771,50 @@ input {
         .on("dragstart", function() {
           this.parentNode.appendChild(this);
         })
-        .on("drag", dragmove))
-      .on("mouseover", function(d) {
-        var name = nameHash(d.name);
-        if (d.name.endsWith("0")) {
-          sankeyGraph.selectAll(".link")
-            .style("stroke-opacity", 0);
-          sankeyGraph.selectAll(".source_" + name.substring(0, name.length - 1) + "0")
-            .style("stroke-opacity", 0.4)
-            .style("stroke", function(d) {
-              return colorConvert(d);
-            })
-          sankeyGraph.selectAll(".source_" + name.substring(0, name.length - 1) + "1")
-            .style("stroke-opacity", 0.4)
-            .style("stroke", function(d) {
-              return colorConvert(d);
-            })
-        } else if (d.name.endsWith("1")) {
-          sankeyGraph.selectAll(".link")
-            .style("stroke-opacity", 0);
-          sankeyGraph.selectAll(".source_" + name)
-            .style("stroke-opacity", 0.4)
-            .style("stroke", function(d) {
-              return colorConvert(d);
-            })
-          sankeyGraph.selectAll(".target_" + name)
-            .style("stroke-opacity", 0.4)
-            .style("stroke", function(d) {
-              return colorConvert(d);
-            })
-        } else {
-          sankeyGraph.selectAll(".link")
-            .style("stroke-opacity", 0);
-          sankeyGraph.selectAll(".target_" + name.substring(0, name.length - 1) + "1")
-            .style("stroke-opacity", 0.4)
-            .style("stroke", function(d) {
-              return colorConvert(d);
-            })
-          sankeyGraph.selectAll(".target_" + name.substring(0, name.length - 1) + "2")
-            .style("stroke-opacity", 0.4)
-            .style("stroke", function(d) {
-              return colorConvert(d);
-            })
-        }
-      });
+        .on("drag", dragmove));
+    // .on("mouseover", function(d) {
+    //   var name = nameHash(d.name);
+    //   if (d.name.endsWith("0")) {
+    //     sankeyGraph.selectAll(".link")
+    //       .style("stroke-opacity", 0);
+    //     sankeyGraph.selectAll(".source_" + name.substring(0, name.length - 1) + "0")
+    //       .style("stroke-opacity", 0.8)
+    //       .style("stroke", function(d) {
+    //         return colorConvert(d);
+    //       })
+    //     sankeyGraph.selectAll(".source_" + name.substring(0, name.length - 1) + "1")
+    //       .style("stroke-opacity", 0.8)
+    //       .style("stroke", function(d) {
+    //         return colorConvert(d);
+    //       })
+    //   } else if (d.name.endsWith("1")) {
+    //     sankeyGraph.selectAll(".link")
+    //       .style("stroke-opacity", 0);
+    //     sankeyGraph.selectAll(".source_" + name)
+    //       .style("stroke-opacity", 0.8)
+    //       .style("stroke", function(d) {
+    //         return colorConvert(d);
+    //       })
+    //     sankeyGraph.selectAll(".target_" + name)
+    //       .style("stroke-opacity", 0.8)
+    //       .style("stroke", function(d) {
+    //         return colorConvert(d);
+    //       })
+    //   } else {
+    //     sankeyGraph.selectAll(".link")
+    //       .style("stroke-opacity", 0);
+    //     sankeyGraph.selectAll(".target_" + name.substring(0, name.length - 1) + "1")
+    //       .style("stroke-opacity", 0.8)
+    //       .style("stroke", function(d) {
+    //         return colorConvert(d);
+    //       })
+    //     sankeyGraph.selectAll(".target_" + name.substring(0, name.length - 1) + "2")
+    //       .style("stroke-opacity", 0.8)
+    //       .style("stroke", function(d) {
+    //         return colorConvert(d);
+    //       })
+    //   }
+    // });
 
     // add the rectangles for the nodes
     node.append("rect")
