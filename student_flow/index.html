@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-svg {
+.squareSvg {
   float: left;
 }
 
@@ -37,6 +37,10 @@ svg {
   text-anchor: middle;
 }
 
+.squareRates {
+  cursor: default;
+}
+
 .chartTitle {
   position: absolute;
   font-family: sans-serif;
@@ -45,38 +49,65 @@ svg {
 
 .descrip {
   position: absolute;
-  left: 1135px;
-  top: 120px;
-  width: 440px;
+  left: 140px;
+  top: 1140px;
+  width: 900px;
+}
+
+.node rect {
+  cursor: move;
+  fill-opacity: .9;
+}
+
+.column, .row {
+  cursor: default;
+}
+.node text {
+  pointer-events: none;
+  font-size: 12px;
+  text-shadow: 0 1px 0 #fff;
+}
+
+input {
+  margin-left: 10px
+}
+
+.link {
+  fill: none;
+  stroke-opacity: .3;
 }
 </style>
 
 <body>
-  <h1 style="position: absolute; left: 600px; top: 10px">Aleration of Student Majors</h1>
+  <h1 style="position: absolute; left: 740px; top: 10px">Aleration of Student Majors</h1>
   <div class="descrip">
     <p><b>Description:</b> This project is to visualize how students switch majors during their first year and second year in college. Each square in this graph stands for the alteration ratio of majors from source majors to destination majors with the respects to the number of students in source majors. The upper division of squares refers to the changes occurring in the first year, while the lower one refers to that in the seond year. The histograms which are shown when you hover your mouse on squares illustrate the detailed rates for student changing majors by genders and academic standing of students.</p>
   </div>
-  <p style="position: absolute; left: 570px; top:70px; font-size: 20px;">DESTINATION</p>
-  <p style="position: absolute; left: 5px; top:670px; font-size: 20px; transform: rotate(-90deg);">SOURCE</p>
-  <form action="" style="position: absolute; left: 1240px; top:340px">
-    Y Axis:
-    <input type="radio" name="yAxisType" value="fixed" checked="checked" style="margin-left: 10px"> Fixed
-    <input type="radio" name="yAxisType" value="adjusted" style="margin-left: 10px"> Adjusted
+  <p style="position: absolute; left: 570px; top:60px; font-size: 20px;">DESTINATION</p>
+  <p style="position: absolute; left: -10px; top:670px; font-size: 20px; transform: rotate(-90deg);">SOURCE</p>
+  <form action="" style="position: absolute; left: 1225px; top:260px">
+    Side View:
+    <input type="radio" name="viewOption" checked="checked" onclick="showSankey()"> Sankey
+    <input type="radio" name="viewOption" onclick="showHisto()"> Histograms
   </form>
-  <p class="chartTitle" style="left: 1220px; top:380px;">Fig. 1: Major Changing Rate by Gender</p>
-  <p class="chartTitle" style="left: 1190px; top:690px;">Fig. 2: Major Changing Rate by Academic Standing</p>
-  <!--   <form action="" style="position: absolute; left: 1160px; top:230px">
-    Phase:
-    <input type="radio" name="phase" value="1" checked="checked" style="margin-left: 10px"> First
-    <input type="radio" name="phase" value="2" style="margin-left: 10px"> Second
-  </form> -->
+  <div id="sankey" style="position: absolute; left: 1100px; top: 309px"></div>
+  <div id="histo" style="visibility: hidden">
+    <form action="" style="position: absolute; left: 1240px; top:340px">
+      Y Axis:
+      <input type="radio" name="yAxisType" value="fixed" checked="checked"> Fixed
+      <input type="radio" name="yAxisType" value="adjusted"> Adjusted
+    </form>
+    <p class="chartTitle" style="left: 1220px; top:380px;">Fig. 1: Major Changing Rate by Gender</p>
+    <p class="chartTitle" style="left: 1190px; top:690px;">Fig. 2: Major Changing Rate by Academic Standing</p>
+  </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+  <script src="sankey.js"></script>
   <script>
   var margin = {
       top: 310,
       right: 10,
       bottom: 10,
-      left: 250
+      left: 245
     },
     width = 850,
     height = 850,
@@ -94,6 +125,7 @@ svg {
     .range(["white", d3.hsl("red")]);
 
   var svg = d3.select("body").append("svg")
+    .attr("class", "squareSvg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     // .style("margin-left", margin.left + "px")
@@ -109,14 +141,14 @@ svg {
       bottom: 20
     };
 
-  d3.select("body").append("svg")
+  d3.select("#histo").append("svg")
     .attr("class", "sideview")
     .attr("id", "sideview0")
     .attr("width", sideWidth)
     .attr("height", sideHeight)
     .append("g");
 
-  d3.select("body").append("svg")
+  d3.select("#histo").append("svg")
     .attr("class", "sideview")
     .attr("id", "sideview1")
     .attr("width", sideWidth)
@@ -153,6 +185,8 @@ svg {
       .on("mouseover", rectMouseover);
 
     function rectMouseover(data) {
+      if (document.getElementsByName("viewOption")[0].checked)
+        return;
       d3.selectAll(".selected")
         .attr("class", "unselected")
         .style("fill", function(d, i) {
@@ -244,6 +278,7 @@ svg {
       });
 
     cell.append("text")
+      .attr("class", "squareRates")
       .attr("transform", function(d, i) {
         return "translate(" + (45 * i + 21) + "," + 14 + ")";
       })
@@ -255,6 +290,7 @@ svg {
       });
 
     cell.append("text")
+      .attr("class", "squareRates")
       .attr("transform", function(d, i) {
         return "translate(" + (45 * i + 21) + "," + 34 + ")";
       })
@@ -270,12 +306,87 @@ svg {
       .enter()
       .append("g")
       .attr("class", "column")
-      .attr("font-size", 14)
+      .attr("font-size", 13)
       .attr("transform", function(d, i) {
         return "translate(" + (45 * i + 21) + "," + -10 + ")rotate(-90)";
       });
 
+    column.append("rect")
+      .attr("transform", function(d, i) {
+        return "translate(" + -2 + "," + (-21) + ")";
+      })
+      .attr('width', 191)
+      .attr('height', rh)
+      .style("fill", "white")
+      .style("stroke", "#ddd")
+      .style("stroke-width", "1")
+      .on("mouseover", function(d) {
+        if (document.getElementsByName("viewOption")[1].checked)
+          return;
+        d3.select("#hovered")
+          .attr("id", "unhovered")
+          .style("fill", "white");
+        d3.select(this)
+          .attr("id", "hovered")
+          .style("fill", function(d) {
+            d = d + "2";
+            return d3.rgb(color(d.substring(0, d.length - 1)));
+          });
+        d = d + "2";
+        var name = nameHash(d);
+        sankeyGraph.selectAll(".link")
+          .style("stroke-opacity", 0);
+        sankeyGraph.selectAll(".target_" + name.substring(0, name.length - 1) + "1")
+          .style("stroke-opacity", 0.4)
+          .style("stroke", function(d) {
+            return d3.rgb(color(d.target.name.substring(0, d.target.name.length - 1)));
+          });
+        sankeyGraph.selectAll(".target_" + name.substring(0, name.length - 1) + "2")
+          .style("stroke-opacity", 0.4)
+          .style("stroke", function(d) {
+            return d3.rgb(color(d.target.name.substring(0, d.target.name.length - 1)));
+          });
+      })
+      .on("click", function(d) {
+        if (document.getElementsByName("viewOption")[1].checked)
+          return;
+        var self = d3.select(this);
+        d = d + "2";
+        var name = nameHash(d);
+        if (self.attr('class') == "clicked") {
+          self.attr("class", "unclicked")
+            .style("fill", "white");
+          sankeyGraph.selectAll(".target_" + name.substring(0, name.length - 1) + "1")
+            .attr("class", "link target_" + name.substring(0, name.length - 1) + "1 unclickedLink")
+            .style("stroke-opacity", 0);
+          sankeyGraph.selectAll(".target_" + name.substring(0, name.length - 1) + "2")
+            .attr("class", "link target_" + name.substring(0, name.length - 1) + "1 unclickedLink")
+            .style("stroke-opacity", 0);
+        } else {
+          self.attr("class", "clicked")
+            .style("fill", function(d) {
+              d = d + "2";
+              return d3.rgb(color(d.substring(0, d.length - 1)));
+            });
+          sankeyGraph.selectAll(".target_" + name.substring(0, name.length - 1) + "1")
+            .attr("class", "link target_" + name.substring(0, name.length - 1) + "1 clickedLink")
+            .style("stroke-opacity", 0.4)
+            .style("stroke", function(d) {
+              return d3.rgb(color(d.target.name.substring(0, d.target.name.length - 1)));
+            });
+          sankeyGraph.selectAll(".target_" + name.substring(0, name.length - 1) + "2")
+            .attr("class", "link target_" + name.substring(0, name.length - 1) + "1 clickedLink")
+            .style("stroke-opacity", 0.4)
+            .style("stroke", function(d) {
+              return d3.rgb(color(d.target.name.substring(0, d.target.name.length - 1)));
+            });
+        }
+      });
+
     column.append("text")
+      .attr("transform", function(d, i) {
+        return "translate(" + 0 + "," + 2 + ")";
+      })
       .attr("text-anchor", "start")
       .text(function(d, i) {
         return d;
@@ -286,13 +397,55 @@ svg {
       .enter()
       .append("g")
       .attr("class", "row")
-      .attr("font-size", 14)
+      .attr("font-size", 13)
       .attr("transform", function(d, i) {
         return "translate(" + -7 + "," + (45 * i + 22) + ")";
       });
 
+    row.append("rect")
+      .attr("transform", function(d, i) {
+        return "translate(" + (-191) + "," + (-22) + ")";
+      })
+      .attr('width', 191)
+      .attr('height', rh)
+      .style("fill", "white")
+      .style("stroke", "#ddd")
+      .style("stroke-width", "1")
+      .on("mouseover", function(d) {
+        if (document.getElementsByName("viewOption")[1].checked)
+          return;
+        d3.select("#hovered")
+          .attr("id", "unhovered")
+          .style("fill", "white");
+        d3.select(this)
+          .attr("id", "hovered")
+          .style("fill", function(d) {
+            d = d + "0";
+            return d3.rgb(color(d.substring(0, d.length - 1)));
+          });
+        d = d + "0";
+        var name = nameHash(d);
+        sankeyGraph.selectAll(".link")
+          .style("stroke-opacity", 0);
+        sankeyGraph.selectAll(".source_" + name.substring(0, name.length - 1) + "0")
+          .style("stroke-opacity", 0.4)
+          .style("stroke", function(d) {
+            console.log(d);
+            return d3.rgb(color(d.target.name.substring(0, d.target.name.length - 1)));
+          });
+        sankeyGraph.selectAll(".source_" + name.substring(0, name.length - 1) + "1")
+          .style("stroke-opacity", 0.4)
+          .style("stroke", function(d) {
+            return d3.rgb(color(d.target.name.substring(0, d.target.name.length - 1)));
+          });
+      });
+
     row.append("text")
-      .attr("text-anchor", "end")
+      .attr("transform", function(d, i) {
+        return "translate(" + -7 + "," + 2 + ")";
+      })
+
+    .attr("text-anchor", "end")
       .text(function(d, i) {
         return d;
       });
@@ -413,6 +566,263 @@ svg {
       .attr("id", "yaxis")
       .attr("transform", "translate(" + padding.left + "," + padding.top + ")")
       .call(yAxis);
+  }
+
+  function showSankey() {
+    d3.selectAll(".selected")
+      .attr("class", "unselected")
+      .style("fill", function(d, i) {
+        if (i === 0) {
+          if (d._2Total < 0.6)
+            return colorMap(d._1Total);
+          else
+            return colorMap1(d._1Total);
+        } else {
+          if (d._2Total < 0.6)
+            return colorMap(d._2Total);
+          else
+            return colorMap1(d._2Total);
+        }
+      });
+    document.getElementById('sankey').style.visibility = "visible";
+    document.getElementById('histo').style.visibility = "hidden";
+  }
+
+  function showHisto() {
+    d3.select("#hovered")
+      .attr("class", "unhovered")
+      .style("fill", "white");
+    document.getElementById('sankey').style.visibility = "hidden";
+    document.getElementById('histo').style.visibility = "visible";
+  }
+
+  var units = "Widgets";
+
+  var margin = {
+      top: 10,
+      right: 10,
+      bottom: 10,
+      left: 10
+    },
+    width = 510 - margin.left - margin.right,
+    height = 830 - margin.top - margin.bottom;
+
+  var formatNumber = d3.format(",.0f"), // zero decimal places
+    format = function(d) {
+      return formatNumber(d) + " " + units;
+    };
+
+  // append the svg canvas to the page
+  var sankeyGraph = d3.select("#sankey").append("svg")
+    .attr("width", width + margin.left + margin.right + 170)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform",
+      "translate(" + margin.left + "," + margin.top + ")");
+
+  // Set the sankey diagram properties
+  var sankey = d3.sankey()
+    .nodeWidth(27)
+    .nodePadding(7)
+    .size([width, height]);
+
+  var path = sankey.link();
+
+  // load the data (using the timelyportfolio csv method)
+  d3.csv("sankey.csv", function(error, data) {
+
+    //set up graph in same style as original example but empty
+    graph = {
+      "nodes": [],
+      "links": []
+    };
+
+    data.forEach(function(d) {
+      graph.nodes.push({
+        "name": d.source
+      });
+      graph.nodes.push({
+        "name": d.target
+      });
+      graph.links.push({
+        "source": d.source,
+        "target": d.target,
+        "value": +d.value
+      });
+    });
+
+    // return only the distinct / unique nodes
+    graph.nodes = d3.keys(d3.nest()
+      .key(function(d) {
+        return d.name;
+      })
+      .map(graph.nodes));
+
+    // console.log(graph.nodes);
+
+    // loop through each link replacing the text with its index from node
+    graph.links.forEach(function(d, i) {
+      graph.links[i].source = graph.nodes.indexOf(graph.links[i].source);
+      graph.links[i].target = graph.nodes.indexOf(graph.links[i].target);
+    });
+
+    //now loop through each nodes to make nodes an array of objects
+    // rather than an array of strings
+    graph.nodes.forEach(function(d, i) {
+      graph.nodes[i] = {
+        "name": d
+      };
+    });
+
+    sankey
+      .nodes(graph.nodes)
+      .links(graph.links)
+      .layout(32);
+
+    // add in the links
+    var link = sankeyGraph.append("g").selectAll(".link")
+      .data(graph.links)
+      .enter().append("path")
+      .attr("class", "link")
+      .attr("d", path)
+      .attr("class", function(d) {
+        return "link source_" + nameHash(d.source.name) + " target_" + nameHash(d.target.name);
+      })
+      .style("stroke-width", function(d) {
+        return Math.max(1, d.dy);
+      })
+      .sort(function(a, b) {
+        return b.dy - a.dy;
+      });
+
+    // add the link titles
+    link.append("title")
+      .text(function(d) {
+        return d.source.name + " → " +
+          d.target.name + "\n" + format(d.value);
+      });
+
+    // add in the nodes
+    var node = sankeyGraph.append("g").selectAll(".node")
+      .data(graph.nodes)
+      .enter().append("g")
+      .attr("class", "node")
+      .attr("transform", function(d, i) {
+        return "translate(" + d.x + "," + d.y + ")";
+      })
+      .call(d3.behavior.drag()
+        .origin(function(d) {
+          return d;
+        })
+        .on("dragstart", function() {
+          this.parentNode.appendChild(this);
+        })
+        .on("drag", dragmove))
+      .on("mouseover", function(d) {
+        var name = nameHash(d.name);
+        if (d.name.endsWith("0")) {
+          sankeyGraph.selectAll(".link")
+            .style("stroke-opacity", 0);
+          sankeyGraph.selectAll(".source_" + name.substring(0, name.length - 1) + "0")
+            .style("stroke-opacity", 0.4)
+            .style("stroke", function(d) {
+              return colorConvert(d);
+            })
+          sankeyGraph.selectAll(".source_" + name.substring(0, name.length - 1) + "1")
+            .style("stroke-opacity", 0.4)
+            .style("stroke", function(d) {
+              return colorConvert(d);
+            })
+        } else if (d.name.endsWith("1")) {
+          sankeyGraph.selectAll(".link")
+            .style("stroke-opacity", 0);
+          sankeyGraph.selectAll(".source_" + name)
+            .style("stroke-opacity", 0.4)
+            .style("stroke", function(d) {
+              return colorConvert(d);
+            })
+          sankeyGraph.selectAll(".target_" + name)
+            .style("stroke-opacity", 0.4)
+            .style("stroke", function(d) {
+              return colorConvert(d);
+            })
+        } else {
+          sankeyGraph.selectAll(".link")
+            .style("stroke-opacity", 0);
+          sankeyGraph.selectAll(".target_" + name.substring(0, name.length - 1) + "1")
+            .style("stroke-opacity", 0.4)
+            .style("stroke", function(d) {
+              return colorConvert(d);
+            })
+          sankeyGraph.selectAll(".target_" + name.substring(0, name.length - 1) + "2")
+            .style("stroke-opacity", 0.4)
+            .style("stroke", function(d) {
+              return colorConvert(d);
+            })
+        }
+      });
+
+    // add the rectangles for the nodes
+    node.append("rect")
+      .attr("height", function(d) {
+        return d.dy;
+      })
+      .attr("width", sankey.nodeWidth())
+      .style("fill", function(d) {
+        d.color = color(d.name.substring(0, d.name.length - 1));
+        return d3.rgb(d.color);
+      })
+      .style("stroke", function(d) {
+        return d3.rgb(d.color).darker(1);
+      })
+      .append("title")
+      .text(function(d) {
+        return d.name + "\n" + format(d.value);
+      });
+
+    // add in the title for the nodes
+    node.append("text")
+      .attr("x", +35)
+      .attr("y", function(d) {
+        return d.dy / 2;
+      })
+      .attr("dy", ".35em")
+      .attr("text-anchor", "start")
+      .attr("transform", null)
+      .text(function(d) {
+        return d.name.substring(0, d.name.length - 1);
+      })
+      .filter(function(d) {
+        return d.x < width / 2;
+      })
+      .attr("x", 6 + sankey.nodeWidth())
+      .attr("text-anchor", "start");
+
+    // the function for moving the nodes
+    function dragmove(d) {
+      d3.select(this).attr("transform",
+        "translate(" + d.x + "," + (
+          d.y = Math.max(0, Math.min(height - d.dy, d3.event.y))
+        ) + ")");
+      sankey.relayout();
+      link.attr("d", path);
+    }
+  });
+
+  function nameHash(name) {
+    if (name.startsWith("Eng. Tech. & Drafting"))
+      return "EngT" + name.charAt(name.length - 1);
+    if (name.startsWith("Health Sci. & Techno."))
+      return "HeaS" + name.charAt(name.length - 1);
+    if (name.startsWith("Health Admin. & Assisting"))
+      return "HeaA" + name.charAt(name.length - 1);
+    if (name.startsWith("Commun, Fam., & Personal Svcs"))
+      return "ComF" + name.charAt(name.length - 1);
+    return name.substring(0, 4) + name.charAt(name.length - 1);
+  }
+
+  function colorConvert(d) {
+    return d3.rgb(color(d.target.name.substring(0, d.target.name.length - 1)));
   }
   </script>
 </body>
