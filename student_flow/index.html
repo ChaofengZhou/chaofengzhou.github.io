@@ -694,7 +694,8 @@ input {
       "links": []
     };
 
-    majors.forEach(function(major) {
+    for (var i = 0; i < majors.length; i++) {
+      var major = majors[i];
       graph.nodes.push({
         "name": major + "2"
       });
@@ -704,8 +705,7 @@ input {
       graph.nodes.push({
         "name": major + "1"
       });
-
-    });
+    }
 
     data.forEach(function(d) {
       graph.links.push({
